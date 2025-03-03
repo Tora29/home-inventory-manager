@@ -1,0 +1,18 @@
+# Python 3.12
+FROM python:3.12-slim
+
+# 作業ディレクトリを /app に設定
+WORKDIR /app
+
+# requirements.txt をコピーしてライブラリをインストール
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# ソースコードをすべて /app にコピー
+COPY . .
+
+# ポートを開ける
+EXPOSE 8000
+
+# サーバー起動コマンドを指定
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
