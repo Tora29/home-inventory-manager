@@ -1,0 +1,35 @@
+# Dockerfile.prod
+
+# -------------
+# Build Stage
+# -------------
+  FROM node:22-alpine AS build
+
+  WORKDIR /app
+  
+  COPY package*.json ./
+  RUN npm install
+  
+  COPY . .
+  RUN npm run build
+  
+  # -------------
+  # Production Stage
+  # -------------
+  FROM node:22-alpine
+  
+  WORKDIR /app
+  
+  # build ステージからビルド成果物をコピー
+  COPY --from=build /app/build ./build
+  COPY --from=build /app/package*.json ./
+  
+  # 本番用に開発依存を除いて再インストール
+  RUN npm install --omit=dev
+  
+  # ポートを開ける（SvelteKitがlistenするポート）
+  EXPOSE 3000
+  
+  # 本番アプリを起動
+  CMD ["node", "build"]
+  
