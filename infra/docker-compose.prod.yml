@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile.prod
     container_name: frontend-prod
     ports:
-      - "3000:3000"
+      - "80:80"
     depends_on:
       - backend
 
@@ -22,6 +22,7 @@ services:
       - db
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/inventory_db
+    restart: always
 
   db:
     image: postgres:15

@@ -1,35 +1,22 @@
-# Dockerfile.prod
+FROM node:22-alpine AS build
 
-# -------------
-# Build Stage
-# -------------
-  FROM node:22-alpine AS build
+WORKDIR /app
 
-  WORKDIR /app
-  
-  COPY package*.json ./
-  RUN npm install
-  
-  COPY . .
-  RUN npm run build
-  
-  # -------------
-  # Production Stage
-  # -------------
-  FROM node:22-alpine
-  
-  WORKDIR /app
-  
-  # build ステージからビルド成果物をコピー
-  COPY --from=build /app/build ./build
-  COPY --from=build /app/package*.json ./
-  
-  # 本番用に開発依存を除いて再インストール
-  RUN npm install --omit=dev
-  
-  # ポートを開ける（SvelteKitがlistenするポート）
-  EXPOSE 3000
-  
-  # 本番アプリを起動
-  CMD ["node", "build"]
-  
+# 依存関係のインストールとビルド
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+# Production Stage: Nginxで静的ファイルを配信
+FROM nginx:alpine
+
+# build ステージからビルド成果物をコピー
+COPY --from=build /app/build /usr/share/nginx/html
+
+# ポートを開ける（SvelteKitがlistenするポート）
+EXPOSE 80
+
+# 本番アプリを起動
+CMD ["nginx", "-g", "daemon off;"]
