@@ -1,35 +1,33 @@
-version: "3.8"
-
 services:
   frontend:
     build:
       context: ../frontend
-      dockerfile: Dockerfile.dev
-    container_name: frontend-dev
+      dockerfile: Dockerfile.prod
+    container_name: frontend-prod
     ports:
-      - "5173:5173"
-    volumes:
-      - ../frontend:/app
+      - "80:80"
     depends_on:
       - backend
 
   backend:
     build:
       context: ../backend
-      dockerfile: Dockerfile.dev
-    container_name: backend-dev
+      dockerfile: Dockerfile.prod
+    container_name: backend-prod
     ports:
       - "8000:8000"
-    volumes:
-      - ../backend:/app
     depends_on:
       - db
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/inventory_db
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/inventory_db
+      - DEBUG=false
+    restart: always
+    env_file:
+      - ../backend/.env.prod
 
   db:
     image: postgres:15
-    container_name: postgres-db-dev
+    container_name: postgres-db-prod
     ports:
       - "5432:5432"
     environment:
@@ -37,7 +35,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: inventory_db
     volumes:
-      - dbdata-dev:/var/lib/postgresql/data
+      - dbdata-prod:/var/lib/postgresql/data
 
 volumes:
-  dbdata-dev:
+  dbdata-prod:

@@ -1,18 +1,21 @@
-# Python 3.12
-FROM python:3.12-slim
+# Python 3.9
+FROM python:3.9-slim
 
-# 作業ディレクトリを /app に設定
-WORKDIR /app
+# 作業ディレクトリを /code に設定
+WORKDIR /code
 
-# requirements.txt をコピーしてライブラリをインストール
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# 依存関係をインストール
+COPY ./requirements.txt /code/requirements.txt
 
-# ソースコードをすべて /app にコピー
-COPY . .
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+
+# ソースコードをすべて /code/app にコピー
+COPY ./app /code/app
+COPY ./alembic /code/alembic
+COPY ./alembic.ini /code/alembic.ini
 
 # ポートを開ける
 EXPOSE 8000
 
 # サーバー起動コマンドを指定
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
