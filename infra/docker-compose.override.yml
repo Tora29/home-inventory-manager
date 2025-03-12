@@ -1,0 +1,49 @@
+# 開発環境をオーバーライド
+services:
+  frontend:
+    build:
+      dockerfile: Dockerfile.dev
+    container_name: frontend-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../frontend:/app
+
+  backend:
+    depends_on:
+      db:
+        condition: service_healthy
+    build:
+      dockerfile: Dockerfile.dev
+    container_name: backend-dev
+    volumes:
+      - ../backend/app:/code/app
+      - ../backend/alembic:/code/alembic
+      - ../backend/alembic/versions:/code/alembic/versions
+      - ../backend/alembic.ini:/code/alembic.ini
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/inventory_db
+      - DEBUG=true
+    env_file:
+      - ../backend/.env.dev
+    command: >
+      sh -c "
+        mkdir -p /code/alembic/versions &&
+        sleep 2 &&
+        alembic revision --autogenerate -m 'Initial migration' &&
+        alembic upgrade head &&
+        uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+
+  db:
+    container_name: postgres-db-dev
+    volumes:
+      - dbdata-dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  dbdata-dev:
