@@ -12,6 +12,11 @@ const config = {
 		files: {
 			assets: 'src/shared/static'
 		},
+		adapter: adapter({
+			pages: 'build',
+			assets: 'build',
+			fallback: null
+		}),
 		alias: {
 			'@': resolve(__dirname, './src'),
 			$lib: resolve(__dirname, './src/lib'),
