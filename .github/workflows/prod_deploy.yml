@@ -1,9 +1,8 @@
-name: Deploy to MiniPC
+name: Deploy to Mini PC
 
 on:
   push:
-    branches:
-      - main
+    branches: main
   workflow_dispatch:
 
 jobs:
@@ -13,7 +12,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: mini pc deploy
+      - name: Create .env.prod file
+        run: |
+          echo "${{ secrets.ENV_PROD_BACKEND }}" > backend/.env.prod
+          ls -la backend/.env.prod
+
+      - name: Build and deploy
         run: |
           cd infra
+          docker compose down
           docker compose -f docker-compose.yml up -d --build
