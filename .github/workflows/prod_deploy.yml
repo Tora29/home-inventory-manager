@@ -1,0 +1,19 @@
+name: Deploy to MiniPC
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: personal-runner
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: mini pc deploy
+        run: |
+          cd infra
+          docker compose -f docker-compose.yml up -d --build
