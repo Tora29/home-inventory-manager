@@ -8,6 +8,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: vitePreprocess(),
+	compilerOptions: {
+		runes: true
+	},
 	kit: {
 		files: {
 			assets: 'src/shared/static'
@@ -18,12 +21,10 @@ const config = {
 			fallback: null
 		}),
 		alias: {
-			'@': resolve(__dirname, './src'),
-			$lib: resolve(__dirname, './src/lib'),
-			$shared: resolve(__dirname, './src/shared'),
-			$entities: resolve(__dirname, './src/entities'),
-			$features: resolve(__dirname, './src/features'),
-			$widgets: resolve(__dirname, './src/widgets')
+			$entities: 'src/entities',
+			$features: 'src/features',
+			$shared: 'src/shared',
+			$widgets: 'src/widgets'
 		}
 	}
 };
