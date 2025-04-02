@@ -2,15 +2,20 @@ from fastapi import FastAPI
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import os
+from dotenv import load_dotenv
+import uvicorn
 
-from app.endpoints import root, items, categories, inventory, transactions
+from app.endpoints import root, stock, category
 from app.db.database import engine
 
-# 全モデルを明示的にインポートしてSQLAlchemyに認識させる
 from app.models.item import Item
+from app.models.stock import Stock
 from app.models.category import Category
-from app.models.inventory import Inventory
-from app.models.transaction import Transaction
+from app.endpoints import item
+
+# 環境変数の読み込み
+load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -28,9 +33,14 @@ app = FastAPI(
 )
 
 # CORSミドルウェアの設定
+origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:8080").split(",")
+
+# デバッグ出力
+print(f"CORS設定: {origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://100.64.1.15:8080", "http://localhost:8080"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,7 +50,6 @@ base_path = "/v1"
 
 # エンドポイントルーターをアプリケーションに登録
 app.include_router(root.router, prefix=f"{base_path}", tags=["root"])
-app.include_router(items.router, prefix=f"{base_path}", tags=["items"])
-app.include_router(categories.router, prefix=f"{base_path}", tags=["categories"])
-app.include_router(inventory.router, prefix=f"{base_path}", tags=["inventory"])
-app.include_router(transactions.router, prefix=f"{base_path}", tags=["transactions"])
+app.include_router(item.router, prefix=f"{base_path}", tags=["items"])
+app.include_router(stock.router, prefix=f"{base_path}", tags=["stocks"])
+app.include_router(category.router, prefix=f"{base_path}", tags=["categories"])

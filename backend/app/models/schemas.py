@@ -5,41 +5,43 @@ from pydantic import BaseModel
 # ベースモデル
 class BaseModelConfig(BaseModel):
     class Config:
+        from_attributes = True
         orm_mode = True
 
 # カテゴリ関連のスキーマ
 class CategoryBase(BaseModel):
-    category_name: str
+    name: str
 
 class CategoryCreate(CategoryBase):
     pass
 
 class CategoryUpdate(BaseModel):
-    category_name: Optional[str] = None
+    name: Optional[str] = None
 
 class Category(CategoryBase):
     id: int
-    created_at: datetime
     updated_at: datetime
-
+    
     class Config:
+        from_attributes = True
         orm_mode = True
 
 # アイテム関連のスキーマ
 class ItemBase(BaseModel):
-    item_name: str
+    name: str
     barcode: Optional[str] = None
     category_id: Optional[int] = None
     note: Optional[str] = None
+    min_threshold: Optional[int] = 1
 
 class ItemCreate(ItemBase):
     pass
 
 class ItemUpdate(BaseModel):
-    item_name: Optional[str] = None
+    name: Optional[str] = None
     barcode: Optional[str] = None
-    category_id: Optional[int] = None
     note: Optional[str] = None
+    min_threshold: Optional[int] = None
 
 class Item(ItemBase):
     id: int
@@ -47,54 +49,37 @@ class Item(ItemBase):
     updated_at: datetime
     
     class Config:
+        from_attributes = True
         orm_mode = True
 
 class ItemDetail(Item):
-    category: Optional[Category] = None
     current_quantity: Optional[int] = None
+    category: Optional[Category] = None
 
 # 在庫関連のスキーマ
-class InventoryBase(BaseModel):
+class StockBase(BaseModel):
     item_id: int
     quantity: int
+    location: Optional[str] = None
 
-class InventoryCreate(InventoryBase):
+class StockCreate(StockBase):
     pass
 
-class InventoryUpdate(BaseModel):
+class StockUpdate(BaseModel):
     quantity: Optional[int] = None
+    location: Optional[str] = None
 
-class Inventory(InventoryBase):
+class Stock(StockBase):
     id: int
     updated_at: datetime
     
     class Config:
+        from_attributes = True
         orm_mode = True
 
-class InventoryDetail(Inventory):
-    item: Item
-
-# トランザクション関連のスキーマ
-class TransactionBase(BaseModel):
-    item_id: int
-    transaction_type: str  # "IN" または "OUT"
-    quantity: int
-    note: Optional[str] = None
-
-class TransactionCreate(TransactionBase):
-    pass
-
-class TransactionUpdate(BaseModel):
-    transaction_type: Optional[str] = None
-    quantity: Optional[int] = None
-    note: Optional[str] = None
-
-class Transaction(TransactionBase):
-    id: int
-    created_at: datetime
+class StockDetail(Stock):
+    item: ItemDetail
     
     class Config:
-        orm_mode = True
-
-class TransactionDetail(Transaction):
-    item: Item 
+        from_attributes = True
+        orm_mode = True 
