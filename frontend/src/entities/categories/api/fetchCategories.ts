@@ -1,4 +1,5 @@
 import type { Category } from '../model/types';
+import { API_BASE_URL } from '$shared/utils/apiConfig';
 
 /**
  * すべてのカテゴリを取得する
@@ -6,7 +7,6 @@ import type { Category } from '../model/types';
  */
 export const fetchCategories = async (): Promise<Category[]> => {
 	try {
-		const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'http://localhost:8000/v1';
 		const url = `${API_BASE_URL}/categories/`;
 
 		const response = await fetch(url);

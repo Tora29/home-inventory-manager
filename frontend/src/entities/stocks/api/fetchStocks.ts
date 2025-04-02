@@ -1,4 +1,5 @@
 import type { Stock } from '../model/types';
+import { API_BASE_URL } from '$shared/utils/apiConfig';
 
 /**
  * 在庫データを取得する
@@ -7,7 +8,6 @@ import type { Stock } from '../model/types';
 export const fetchStocks = async (): Promise<Stock[]> => {
 	try {
 		console.log('在庫データの取得を開始します');
-		const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'http://localhost:8000/v1';
 		const url = `${API_BASE_URL}/stocks/`;
 
 		console.log(`APIエンドポイント: ${url}`);
@@ -32,10 +32,13 @@ export const fetchStocks = async (): Promise<Stock[]> => {
 		// デバッグ: APIレスポンスの詳細を表示
 		console.log('=== APIレスポンスの詳細 ===');
 		console.log('最初の項目のデータ構造:', JSON.stringify(data[0], null, 2));
-		console.log('カテゴリ情報を持つアイテム数:', data.filter((item) => item.item?.category).length);
+		console.log(
+			'カテゴリ情報を持つアイテム数:',
+			data.filter((item: Stock) => item.item?.category).length
+		);
 		console.log(
 			'カテゴリ情報がないアイテム数:',
-			data.filter((item) => !item.item?.category).length
+			data.filter((item: Stock) => !item.item?.category).length
 		);
 		console.log('========================');
 

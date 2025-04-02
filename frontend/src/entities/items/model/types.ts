@@ -1,4 +1,4 @@
-import type { Category } from '$entities/categories';
+import type { Category } from '$entities/categories/model/types';
 
 export interface Item {
 	id: number;
