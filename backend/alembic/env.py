@@ -12,9 +12,7 @@ from alembic import context
 from app.db.base import Base
 # 全モデルをインポートして、SQLAlchemyがメタデータに登録できるようにする
 from app.models.item import Item
-from app.models.category import Category
-from app.models.inventory import Inventory
-from app.models.transaction import Transaction
+from app.models.stock import Stock
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -95,4 +93,4 @@ async def run_migrations_online() -> None:
 if context.is_offline_mode():
     run_migrations_offline()
 else:
-    asyncio.run(run_migrations_online()) 
+    asyncio.run(run_migrations_online())

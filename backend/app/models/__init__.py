@@ -1,11 +1,9 @@
 # Modelsパッケージの初期化
 from app.models.item import Item
+from app.models.stock import Stock
 from app.models.category import Category
-from app.models.inventory import Inventory
-from app.models.transaction import Transaction
 from app.models.schemas import (
     ItemCreate, ItemUpdate, Item as ItemSchema, ItemDetail,
-    CategoryCreate, CategoryUpdate, Category as CategorySchema,
-    InventoryCreate, InventoryUpdate, Inventory as InventorySchema, InventoryDetail,
-    TransactionCreate, TransactionUpdate, Transaction as TransactionSchema, TransactionDetail
+    StockCreate, StockUpdate, Stock as StockSchema, StockDetail,
+    CategoryCreate, CategoryUpdate, Category as CategorySchema
 ) 

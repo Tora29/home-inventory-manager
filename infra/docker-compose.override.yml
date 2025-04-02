@@ -5,9 +5,10 @@ services:
       dockerfile: Dockerfile.dev
     container_name: frontend-dev
     ports:
-      - "5173:5173"
+      - '5173:5173'
     volumes:
       - ../frontend:/app
+      - /app/node_modules
 
   backend:
     depends_on:
@@ -19,8 +20,8 @@ services:
     volumes:
       - ../backend/app:/code/app
       - ../backend/alembic:/code/alembic
-      - ../backend/alembic/versions:/code/alembic/versions
       - ../backend/alembic.ini:/code/alembic.ini
+      - ../backend/insert_samples.py:/code/insert_samples.py
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/inventory_db
       - DEBUG=true
@@ -28,9 +29,7 @@ services:
       - ../backend/.env.dev
     command: >
       sh -c "
-        mkdir -p /code/alembic/versions &&
         sleep 2 &&
-        alembic revision --autogenerate -m 'Initial migration' &&
         alembic upgrade head &&
         uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
       "
@@ -40,7 +39,7 @@ services:
     volumes:
       - dbdata-dev:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
       interval: 10s
       retries: 5
       start_period: 5s
