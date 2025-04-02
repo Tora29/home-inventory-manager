@@ -35,9 +35,6 @@ app = FastAPI(
 # CORSミドルウェアの設定
 origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:8080").split(",")
 
-# デバッグ出力
-print(f"CORS設定: {origins}")
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
