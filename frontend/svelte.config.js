@@ -25,6 +25,17 @@ const config = {
 			$features: 'src/features',
 			$shared: 'src/shared',
 			$widgets: 'src/widgets'
+		},
+		prerender: {
+			handleHttpError: ({ path, status }) => {
+				// 404エラーなら無視する
+				if (status === 404) {
+					return;
+				}
+
+				// その他のエラーは通常通り処理する
+				throw new Error(`${status} while prerendering ${path}`);
+			}
 		}
 	}
 };
