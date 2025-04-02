@@ -1,11 +1,5 @@
-// モデル
-export type { Category, CategoryCreate } from './model/types';
-
 // API
-export {
-	getCategories,
-	getCategory,
-	createCategory,
-	updateCategory,
-	deleteCategory
-} from './api/categoriesApi';
+export { fetchCategories } from './api/fetchCategories';
+
+// Types
+export type { Category } from './model/types';
