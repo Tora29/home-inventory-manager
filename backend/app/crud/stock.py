@@ -51,3 +51,66 @@ async def get_stock_by_item_id_and_location(
     )
     result = await db.execute(query)
     return result.scalars().first()
+
+# バーコードスキャンで商品を追加（在庫の増加）
+async def add_stock_by_barcode(
+    db: AsyncSession, barcode: str, location: str = "入荷", quantity: int = 1
+) -> Optional[Stock]:
+    """
+    バーコードから商品を検索し、在庫を追加します。
+    既存の在庫があれば数量を増やし、なければ新しい在庫レコードを作成します。
+    
+    Args:
+        db: データベースセッション
+        barcode: 商品バーコード
+        location: 保管場所 (デフォルト: "入荷")
+        quantity: 追加数量 (デフォルト: 1)
+        
+    Returns:
+        更新または作成された在庫オブジェクト、商品が見つからない場合はNone
+    """
+    from app.crud.item import get_item_by_barcode
+    
+    try:
+        logger.info(f"在庫追加処理開始: バーコード={barcode}, 場所={location}, 数量={quantity}")
+        
+        # バーコードから商品を検索
+        item = await get_item_by_barcode(db, barcode)
+        if not item:
+            logger.warning(f"商品が見つかりません: バーコード={barcode}")
+            return None
+            
+        logger.info(f"商品を検出: ID={item.id}, 名前={item.name}")
+        
+        # 既存の在庫を検索
+        stock = await get_stock_by_item_id_and_location(db, item.id, location)
+        
+        if stock:
+            # 既存の在庫がある場合は数量を増やす
+            logger.info(f"既存の在庫を更新: 現在数量={stock.quantity} -> {stock.quantity + quantity}")
+            stock.quantity += quantity
+        else:
+            # 新しい在庫レコードを作成
+            logger.info(f"新しい在庫を作成: アイテムID={item.id}, 場所={location}, 数量={quantity}")
+            stock = Stock(
+                item_id=item.id,
+                location=location,
+                quantity=quantity
+            )
+            db.add(stock)
+            
+        # 変更をコミット
+        await db.commit()
+        # リフレッシュして最新の状態を取得
+        await db.refresh(stock)
+        
+        logger.info(f"在庫追加処理完了: 在庫ID={stock.id}, 現在数量={stock.quantity}")
+        return stock
+        
+    except Exception as e:
+        # エラー発生時はロールバック
+        await db.rollback()
+        logger.error(f"在庫追加中にエラー発生: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        raise

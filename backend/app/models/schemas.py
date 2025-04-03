@@ -82,4 +82,37 @@ class StockDetail(Stock):
     
     class Config:
         from_attributes = True
+        orm_mode = True
+
+# バーコードスキャン関連のスキーマ
+class BarcodeStockIn(BaseModel):
+    """バーコードスキャナーからの入力モデル"""
+    barcode: str
+    location: Optional[str] = "入荷"
+    quantity: Optional[int] = 1
+
+class StockInResponse(BaseModel):
+    """在庫追加レスポンスモデル"""
+    success: bool
+    message: str
+    stock: Optional[StockDetail] = None
+    item_name: Optional[str] = None
+
+# 部屋関連のスキーマ
+class RoomBase(BaseModel):
+    name: str
+
+class RoomCreate(RoomBase):
+    pass
+
+class RoomUpdate(BaseModel):
+    name: Optional[str] = None
+
+class Room(RoomBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
         orm_mode = True 
