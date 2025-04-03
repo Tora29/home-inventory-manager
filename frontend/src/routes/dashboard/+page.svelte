@@ -191,6 +191,25 @@
 			// 初期表示時は全ての在庫を表示
 			filteredStocks = [...stocks];
 			console.log('取得した在庫データ:', stocks);
+
+			// デバッグ: 在庫データの詳細を確認
+			if (stocks.length > 0) {
+				console.log('===== 在庫データの詳細確認 =====');
+				const firstItem = stocks[0];
+				console.log('最初のアイテム:', JSON.stringify(firstItem, null, 2));
+				console.log('アイテム名のアクセス方法:', firstItem.item?.name);
+				console.log('カテゴリのアクセス方法:', firstItem.item?.category?.name);
+				console.log('===== アイテム名を確認 =====');
+				stocks.forEach((stock, index) => {
+					console.log(`アイテム ${index + 1}:`, {
+						name: stock.item?.name,
+						id: stock.item?.id,
+						category: stock.item?.category?.name || '未分類',
+						location: stock.location,
+						quantity: stock.quantity
+					});
+				});
+			}
 		} catch (error) {
 			console.error('在庫データの取得に失敗しました:', error);
 			// エラー詳細を表示
