@@ -12,10 +12,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Create .env.prod file
+      - name: Create .env.prod files
         run: |
           echo "${{ secrets.ENV_PROD_BACKEND }}" > backend/.env.prod
+          echo "${{ secrets.ENV_PROD_FRONTEND }}" > frontend/.env.prod
           ls -la backend/.env.prod
+          ls -la frontend/.env.prod
 
       - name: Build and deploy
         run: |
