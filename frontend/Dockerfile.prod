@@ -9,14 +9,11 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Production Stage: Nginxで静的ファイルを配信
-FROM nginx:alpine
+# ビルド成果物を指定のディレクトリに出力
+# 注: ビルド成果物は docker-compose.yml のボリュームで共有される
+FROM alpine:latest
 
-# build ステージからビルド成果物をコピー
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/build /dist
 
-# ポートを開ける（SvelteKitがlistenするポート）
-EXPOSE 80
-
-# 本番アプリを起動
-CMD ["nginx", "-g", "daemon off;"]
+# このコンテナはビルドのみを行い、サービスとしては起動しない
+CMD ["true"]
