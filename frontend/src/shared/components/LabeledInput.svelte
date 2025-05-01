@@ -1,20 +1,26 @@
 <script lang="ts">
 	/**
 	 * ラベル付きインプットコンポーネント
-	 *
-	 * @param type - 入力タイプ
-	 * @param placeholder - プレースホルダーテキスト
-	 * @param value - 入力値
-	 * @param disabled - 無効状態
-	 * @param required - 必須フィールド
-	 * @param name - フィールド名
-	 * @param id - 要素ID
-	 * @param label - ラベルテキスト
-	 * @param className - 追加のCSSクラス
-	 * @param autocomplete - オートコンプリート設定
-	 * @param min - 数値フィールドの最小値
-	 * @param max - 数値フィールドの最大値
-	 * @param step - 数値フィールドのステップ
+	 * @component LabeledInput
+	 */
+	/**
+	 * コンポーネントのプロパティ定義
+	 * @typedef {Object} LabeledInputProps
+	 * @property {('text'|'password'|'email'|'number'|'search'|'tel'|'url')} [type='text'] - 入力フィールドのタイプ
+	 * @property {string} [placeholder=''] - プレースホルダーテキスト
+	 * @property {string|number} [value=''] - 入力値
+	 * @property {boolean} [disabled=false] - 無効状態の指定
+	 * @property {boolean} [required=false] - 必須入力の指定
+	 * @property {string} [name=''] - フォーム送信時の名前
+	 * @property {string} [id=''] - 要素のID
+	 * @property {string} [label=''] - ラベルテキスト
+	 * @property {string} [className=''] - 追加のCSSクラス
+	 * @property {string} [autocomplete='off'] - オートコンプリートの設定
+	 * @property {string|number} [min] - 数値フィールドの最小値
+	 * @property {string|number} [max] - 数値フィールドの最大値
+	 * @property {string|number} [step] - 数値フィールドのステップ
+	 * @property {('sm'|'md'|'lg')} [size='md'] - 入力フィールドのサイズ
+	 * @property {string} [error=''] - エラーメッセージ
 	 */
 
 	// props定義
@@ -31,7 +37,9 @@
 		autocomplete = 'off',
 		min = undefined,
 		max = undefined,
-		step = undefined
+		step = undefined,
+		size = 'md',
+		error = ''
 	} = $props<{
 		type?: 'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url';
 		placeholder?: string;
@@ -46,19 +54,59 @@
 		min?: string | number;
 		max?: string | number;
 		step?: string | number;
+		size?: 'sm' | 'md' | 'lg';
+		error?: string;
 	}>();
 
-	// HTMLInputElement参照
+	/**
+	 * HTMLInputElement参照
+	 */
 	let inputElement: HTMLInputElement;
 
-	// フォーカスメソッド
+	/**
+	 * 入力フィールドにフォーカスするメソッド
+	 */
 	export function focus() {
 		inputElement?.focus();
 	}
 
-	// 入力要素を取得するためのメソッド
+	/**
+	 * 入力要素を取得するためのメソッド
+	 * @returns {HTMLInputElement|undefined} 入力要素のDOM参照
+	 */
 	export function getInputElement(): HTMLInputElement | undefined {
 		return inputElement;
+	}
+
+	/**
+	 * インプットのスタイルクラスを取得する
+	 * @returns {string} 適用するCSSクラス名の文字列
+	 */
+	function getInputClasses(): string {
+		// サイズのマッピング
+		const sizeMap: Record<string, string> = {
+			sm: 'input-sm',
+			md: '',
+			lg: 'input-lg'
+		};
+
+		// 状態クラス
+		const stateClasses = {
+			disabled: disabled ? 'input-disabled' : '',
+			error: error ? 'input-error' : ''
+		};
+
+		return [
+			'input',
+			'w-full',
+			sizeMap[size],
+			stateClasses.disabled,
+			stateClasses.error,
+			className
+		]
+			.filter(Boolean)
+			.join(' ')
+			.trim();
 	}
 </script>
 
@@ -82,6 +130,9 @@
 		{step}
 		bind:value
 		bind:this={inputElement}
-		class="input w-full {className}"
+		class={getInputClasses()}
 	/>
+	{#if error}
+		<div class="text-error-500 text-sm mt-1">{error}</div>
+	{/if}
 </div>

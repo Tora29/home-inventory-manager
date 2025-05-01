@@ -1,35 +1,85 @@
 <script lang="ts" module>
+	/**
+	 * DataTable コンポーネント用のモジュール定義
+	 * @module DataTable
+	 */
 	import IconMoveVertical from '@lucide/svelte/icons/move-vertical';
 	import IconMoveUp from '@lucide/svelte/icons/move-up';
 	import IconMoveDown from '@lucide/svelte/icons/move-down';
 
+	/**
+	 * データ項目のインターフェース
+	 * @interface DataItem
+	 */
 	export interface DataItem {
 		[key: string]: any;
 	}
 
-	// コンポーネントをサポートするための型定義
+	/**
+	 * セル内容の型定義
+	 * 文字列またはコンポーネントオブジェクト
+	 * @typedef {string|Object} CellContent
+	 */
 	export type CellContent = string | { component: any; props?: any };
 
+	/**
+	 * テーブル列の設定インターフェース
+	 * @interface Column
+	 */
 	export interface Column {
+		/** カラムヘッダーのテキスト */
 		header: string;
+		/** データオブジェクトのプロパティキー */
 		key: string;
+		/** テキスト配置 */
 		align?: 'left' | 'center' | 'right';
+		/** セル内容のフォーマッター関数 */
 		formatter?: (value: any, item: DataItem) => CellContent;
+		/** 値がない場合のフォールバックテキスト */
 		fallback?: string;
+		/** 列の幅 */
 		width?: string;
-		sortable?: boolean; // ソート可能かどうか
+		/** ソート可能かどうか */
+		sortable?: boolean;
 	}
 
+	/**
+	 * ソート方向の型定義
+	 * @typedef {'asc'|'desc'|null} SortDirection
+	 */
 	export type SortDirection = 'asc' | 'desc' | null;
 
+	/**
+	 * ソート状態のインターフェース
+	 * @interface SortState
+	 */
 	export interface SortState {
+		/** ソートするキー */
 		key: string | null;
+		/** ソート方向 */
 		direction: SortDirection;
 	}
 </script>
 
 <script lang="ts">
-	// コンポーネントプロパティ
+	/**
+	 * データテーブルコンポーネント
+	 * @component DataTable
+	 */
+	/**
+	 * コンポーネントのプロパティ定義
+	 * @typedef {Object} DataTableProps
+	 * @property {DataItem[]} [data=[]] - 表示するデータ配列
+	 * @property {Column[]} [columns=[]] - テーブル列の設定配列
+	 * @property {boolean} [showTotal=false] - 合計行を表示するかどうか
+	 * @property {string} [totalLabel='合計'] - 合計行のラベル
+	 * @property {string} [emptyMessage='データがありません'] - データがない場合のメッセージ
+	 * @property {boolean} [hoverEffect=true] - 行にホバーエフェクトを適用するかどうか
+	 * @property {Function} [getRowClass] - 行のカスタムクラスを返す関数
+	 * @property {Function} [getCellClass] - セルのカスタムクラスを返す関数
+	 * @property {SortState} [initialSort] - 初期ソート状態
+	 * @property {Function} [onSort] - ソート状態変更時のコールバック関数
+	 */
 	const props = $props<{
 		data?: DataItem[];
 		columns?: Column[];
@@ -54,10 +104,15 @@
 	const getCellClass = $derived(props.getCellClass || (() => ''));
 	const onSort = $derived(props.onSort);
 
-	// ソート状態
+	/**
+	 * ソート状態の内部状態
+	 */
 	let sortState = $state<SortState>(props.initialSort || { key: null, direction: null });
 
-	// ソート可能な列をクリックしたときの処理
+	/**
+	 * ソート可能な列をクリックしたときの処理
+	 * @param {Column} column - クリックされた列
+	 */
 	function handleHeaderClick(column: Column) {
 		if (!column.sortable) return;
 
@@ -80,7 +135,10 @@
 		}
 	}
 
-	// ソートされたデータを取得
+	/**
+	 * ソートされたデータを取得
+	 * @returns {DataItem[]} ソート後のデータ配列
+	 */
 	function getSortedData(): DataItem[] {
 		if (!sortState.key || !sortState.direction) {
 			return data;
@@ -127,7 +185,12 @@
 		});
 	}
 
-	// ネストされたプロパティを取得する関数
+	/**
+	 * ネストされたプロパティを取得する関数
+	 * @param {any} obj - 対象オブジェクト
+	 * @param {string} path - プロパティパス（ドット記法）
+	 * @returns {any} 取得した値
+	 */
 	function getNestedProperty(obj: any, path: string): any {
 		// ドット記法でプロパティパスを分割
 		const keys = path.split('.');
@@ -144,7 +207,12 @@
 		return value;
 	}
 
-	// セルの値を取得する関数
+	/**
+	 * セルの値を取得する関数
+	 * @param {DataItem} item - データ項目
+	 * @param {Column} column - 列設定
+	 * @returns {CellContent} セルの内容
+	 */
 	function getCellValue(item: DataItem, column: Column): CellContent {
 		// ドット記法に対応した値の取得
 		const value = getNestedProperty(item, column.key);
@@ -162,39 +230,60 @@
 		return String(value);
 	}
 
-	// セル位置のクラスを取得
+	/**
+	 * セル位置のクラスを取得
+	 * @param {string} align - テキスト配置
+	 * @returns {string} CSSクラス名
+	 */
 	function getAlignClass(align?: 'left' | 'center' | 'right'): string {
-		switch (align) {
-			case 'center':
-				return 'text-center';
-			case 'right':
-				return 'text-right';
-			default:
-				return '';
-		}
+		const alignMap: Record<string, string> = {
+			center: 'text-center',
+			right: 'text-right',
+			left: ''
+		};
+		
+		return alignMap[align || 'left'] || '';
 	}
 
-	// セルの内容が文字列かコンポーネントかを判定
+	/**
+	 * セルの内容が文字列かコンポーネントかを判定
+	 * @param {CellContent} content - セルの内容
+	 * @returns {boolean} コンポーネントであるかどうか
+	 */
 	function isComponent(content: CellContent): content is { component: any; props?: any } {
 		return typeof content === 'object' && content !== null && 'component' in content;
 	}
 
-	// 行にホバーエフェクトを適用するか判定する関数
+	/**
+	 * 行にホバーエフェクトを適用するか判定する関数
+	 * @param {DataItem} item - データ項目
+	 * @returns {boolean} ホバーエフェクトを適用するかどうか
+	 */
 	function shouldApplyHoverEffect(item: DataItem): boolean {
 		if (!hoverEffect) return false;
 		// カスタムスタイルがある行には適用しない
 		return getRowClass(item) === '';
 	}
 
-	// ソートアイコンを取得する関数
+	/**
+	 * ソートアイコンを取得する関数
+	 * @param {Column} column - 列設定
+	 * @returns {any} アイコンコンポーネント
+	 */
 	function getSortIconComponent(column: Column) {
 		if (!column.sortable) return null;
 
+		const iconMap = {
+			notSorted: IconMoveVertical,
+			asc: IconMoveUp,
+			desc: IconMoveDown
+		};
+
 		if (sortState.key !== column.key) {
-			return IconMoveVertical;
+			return iconMap.notSorted;
 		}
 
-		return sortState.direction === 'asc' ? IconMoveUp : IconMoveDown;
+		return sortState.direction === 'asc' ? iconMap.asc : iconMap.desc;
 	}
 </script>
 
@@ -249,7 +338,7 @@
 				{/each}
 			{:else}
 				<tr>
-					<td colspan={columns.length} class="text-center">{emptyMessage}</td>
+					<td colspan={columns.length} class="text-center py-4">{emptyMessage}</td>
 				</tr>
 			{/if}
 		</tbody>

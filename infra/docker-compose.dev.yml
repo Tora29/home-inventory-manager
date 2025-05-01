@@ -24,7 +24,7 @@ services:
       - ../backend/app:/code/app
       - ../backend/alembic:/code/alembic
       - ../backend/alembic.ini:/code/alembic.ini
-      - ../backend/insert_samples.py:/code/insert_samples.py
+      - ../backend/scripts:/code/scripts
     depends_on:
       db:
         condition: service_healthy

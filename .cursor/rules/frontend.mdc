@@ -1,0 +1,131 @@
+---
+description: フロントエンド開発ガイドライン
+globs: 
+alwaysApply: false
+---
+= フロントエンド開発ガイドライン
+
+== 目的
+本ドキュメントは、フロントエンド開発における設計・実装・テスト・デプロイ・運用の標準ルールを定め、開発の統一性と品質の向上を目的とする。
+
+== 開発環境
+
+=== 使用技術
+
+[options="header", cols="2,2"]
+|===
+|カテゴリ|技術
+|IDE|Cursor
+|言語|TypeScript
+|フレームワーク|Svelte
+|ビルドツール|SvelteKit
+|UIコンポーネントライブラリ|Daisy UI
+|パッケージマネージャ|npm
+|テスト（Unit）|vitest
+|テスト（E2E）|Playwright
+|レンダリング方式|SSG（静的サイト生成）
+|ディレクトリ構成|Feature-Sliced Design
+|===
+
+== 設計方針
+
+=== コンポーネント設計
+
+* Feature-Sliced Design を参考にコンポーネントを設計
+* 状態管理は最小限に抑え、`props` と `events` によるデータフローを重視
+* any 型は禁止とする
+
+=== 命名規則
+
+* .svelte ファイル名は PascalCase
+* .ts ファイル名は camelCase
+* ファイル名は kebab-case
+* ユーティリティ関数は camelCase で命名し、xxxUtils.ts 形式とする。
+* Svelte 用ユーティリティは xxxSvelteUtils.ts 形式で命名する。
+* テストファイルは対象コンポーネント名に `.test.ts` を付与する  
+
+=== Daisy UI の使い方
+
+* 基本は **Daisy UI** を採用し、Daisy UI で対応できない部分は Tailwind CSS やカスタム CSS で拡張する
+* 過剰なカスタマイズは避け、標準スタイルを尊重
+
+=== Feature-Sliced Design
+
+Feature-Sliced Design（FSD）では、コードを以下の 3 階層で整理する：
+
+* Layer（レイヤー）：責任範囲ごとの構造
+* Slice（スライス）：ドメイン単位の構造
+* Segment（セグメント）：技術的役割ごとに構成
+
+**レイヤー間の依存関係**
+レイヤーは上から下方向への依存のみ許可する（例：features → entities → shared）
+
+* **Layer（第一階層）:** 
+アプリケーション全体を大きく 7 つのレイヤー（App、Pages、Widgets、Features、Entities、Shared）
+に分け、各レイヤーは責任範囲に応じて管理する。  
+※ 今回は Svelte Kit のため、App, Pages は Svelte の生成ルールに従って routes に統合している。
+
+* **entities:** 
+Entities レイヤーでは、アプリケーションのビジネスロジックやデータモデルを定義し、
+再利用可能なビジネスロジックや UI コンポーネントを管理する。  
+このレイヤーの各スライスには、Entities に基づく静的な UI やデータストア、CRUD 操作が含まれる。
+
+* **features:** 
+Features レイヤーでは、機能を実現するためのモジュールを管理する。  
+このレイヤーでは、データフェッチや状態管理などを、再利用可能な 1 つの機能として集約することで、
+アプリケーションの主要な機能を独立した単位として整理し、他の部分との結合を最小限に抑えることを目的とする。
+
+* **shared:** 
+Shared レイヤーでは、プロジェクトやビジネスの特殊性から切り離した、独立したモジュールや UI を管理する。  
+このレイヤーはスライスを持たず、直接セグメントで構成されている点が他のレイヤーと異なる。
+
+* **widgets:** 
+Widgets レイヤーでは、Entities や Features を意味のあるブロックに結合した UI を管理する。  
+基本的には、ビジネスロジックを持たず、UI のみを記述する
+
+* **Slice（第二階層）:**
+ビジネスドメイン単位でコードを分割する。
+各 Slice は他と直接依存しないように設計される。
+
+* **Segment（第三階層）:**
+技術的な役割ごとに分類する。（`model`, `ui`, `api`）
+必要に応じて独自の Segment を作成することも可能であるため、
+今回は状態管理のための store を追加する。
+
+* **routes:** 
+Svelte Kit のルーティングコンポーネントを配置する。
+
+* **__tests__:** 
+各モジュールの単体、結合テストコードを管理する。
+
+== Cursor 連携チェックリスト
+
+[options="header"]
+|===
+|カテゴリ|チェック項目|備考
+|ファイル命名|`.svelte` ファイルは PascalCase になっているか|例: `UserCard.svelte`
+|ファイル命名|`.ts` ファイルは camelCase になっているか|例: `userStore.ts`
+|ファイル命名|その他ファイルは kebab-case になっているか|例: `user-utils.ts`
+|コンポーネント|`any` 型を使用していないか|明示的な型定義を使用する
+|コンポーネント配置|表示が主目的なら `entities` に配置しているか|再利用性を考慮
+|コンポーネント配置|操作が主目的なら `features` に配置しているか|ユースケース単位での実装
+|依存関係|正しいレイヤー間依存（上から下への依存のみ）を守っているか|`features` → `entities` → `shared`
+|API実装|API 実装は `shared/api/client.ts` 経由か|直接 fetch/axios を使わない
+|ユーティリティ|ユーティリティ関数は `xxxUtils.ts` 形式か|例: `dateUtils.ts`
+|Svelte ユーティリティ|Svelte 用ユーティリティは `xxxSvelteUtils.ts` 形式か|例: `formSvelteUtils.ts`
+|UI設計|基本は **Daisy UI** を使用しているか|過剰なカスタム CSS は避ける
+|状態管理|状態管理は最小限に抑え、`props` と `events` を重視しているか|不要な状態は作らない
+|テスト|対応するテストファイルを作成しているか|`__tests__` 以下に配置
+|===
+
+[IMPORTANT]
+====
+コンポーネント配置の判断基準:
+
+* 表示が主目的 → `entities`
+* 操作・ロジックが主目的 → `features`
+* 独立・再利用性高 → `entities`
+* 特定ユースケースに特化 → `features`
+* ページ構成要素の組み合わせ → `widgets`
+* ビジネスロジックから独立した共通機能 → `shared`
+====

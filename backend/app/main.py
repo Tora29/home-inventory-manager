@@ -6,14 +6,13 @@ import os
 from dotenv import load_dotenv
 import uvicorn
 
-from app.endpoints import root, stock, category, item, room
-
 from app.db.database import engine
 
 from app.models.item import Item
 from app.models.stock import Stock
 from app.models.category import Category
-from app.models.room import Room
+from app.models.location import Location
+from app.endpoints import root, categories, items, stocks, locations
 
 # 環境変数の読み込み
 load_dotenv()
@@ -48,8 +47,7 @@ base_path = "/v1"
 
 # エンドポイントルーターをアプリケーションに登録
 app.include_router(root.router, prefix=f"{base_path}", tags=["root"])
-app.include_router(item.router, prefix=f"{base_path}", tags=["items"])
-app.include_router(stock.router, prefix=f"{base_path}", tags=["stocks"])
-app.include_router(category.router, prefix=f"{base_path}", tags=["categories"])
-app.include_router(room.router, prefix=f"{base_path}", tags=["rooms"])
-# app.include_router(websocket.router, prefix=f"{base_path}", tags=["WebSocket"])
+app.include_router(items.router, prefix=f"{base_path}", tags=["items"])
+app.include_router(stocks.router, prefix=f"{base_path}", tags=["stocks"])
+app.include_router(categories.router, prefix=f"{base_path}", tags=["categories"])
+app.include_router(locations.router, prefix=f"{base_path}", tags=["locations"])
