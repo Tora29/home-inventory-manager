@@ -1,4 +1,23 @@
 <script lang="ts">
+	/**
+	 * ボタンコンポーネント
+	 * @component Button
+	 */
+	
+	/**
+	 * コンポーネントのプロパティ定義
+	 * @typedef {Object} ButtonProps
+	 * @property {('filled'|'tonal'|'outlined')} [variant='filled'] - ボタンのバリエーション
+	 * @property {('primary'|'secondary'|'tertiary'|'success'|'warning'|'error'|'surface')} [color='primary'] - ボタンの色
+	 * @property {('sm'|'base'|'lg')} [size='base'] - ボタンのサイズ
+	 * @property {boolean} [disabled=false] - 無効状態の指定
+	 * @property {('button'|'submit'|'reset')} [type='button'] - ボタンのタイプ
+	 * @property {string} [className=''] - 追加のCSSクラス
+	 * @property {boolean} [iconOnly=false] - アイコンのみのボタンかどうか
+	 * @property {string} [ariaLabel=''] - アクセシビリティ用のラベル
+	 * @property {Function} [onclick] - クリック時のイベントハンドラ
+	 * @property {string} [children=''] - ボタンの子要素（テキストなど）
+	 */
 	const {
 		variant = 'filled',
 		color = 'primary',
@@ -23,13 +42,38 @@
 		children?: string;
 	}>();
 
-	// クラスを動的に生成
+	/**
+	 * ボタンのスタイルクラスを取得する
+	 * @returns {string} 適用するCSSクラス名の文字列
+	 */
 	function getClasses(): string {
-		const baseClass = iconOnly ? 'btn-icon' : 'btn';
-		const sizeClass = size !== 'base' ? `btn-${size}` : '';
-		const variantClass = `preset-${variant}-${color}${variant === 'filled' ? '-500' : ''}`;
-
-		return `${baseClass} ${sizeClass} ${variantClass} ${className}`.trim();
+		// ベースクラスのマッピング
+		const baseClassMap: Record<string, string> = {
+			true: 'btn-icon',
+			false: 'btn'
+		};
+		
+		// サイズのマッピング
+		const sizeMap: Record<string, string> = {
+			sm: 'btn-sm',
+			base: '',
+			lg: 'btn-lg'
+		};
+		
+		// バリアントとカラーの組み合わせ
+		const variantSuffix = variant === 'filled' ? '-500' : '';
+		const variantClass = `preset-${variant}-${color}${variantSuffix}`;
+		
+		// 最終的なクラス名を生成
+		return [
+			baseClassMap[String(iconOnly)],
+			sizeMap[size],
+			variantClass,
+			className
+		]
+			.filter(Boolean)
+			.join(' ')
+			.trim();
 	}
 </script>
 

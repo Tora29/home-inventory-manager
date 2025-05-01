@@ -6,6 +6,6 @@ router = APIRouter()
 async def read_root():
     return {"message": "Welcome to Home Inventory Manager API!"}
 
-@router.get("/api/health")
+@router.get("/health")
 async def health_check():
     return {"status": "healthy"} 

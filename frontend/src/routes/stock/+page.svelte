@@ -10,7 +10,7 @@
 	} from '$entities/stocks';
 	import { createItem, type ItemCreate } from '$entities/items';
 	import { fetchCategories, type Category } from '$entities/categories';
-	import { fetchRooms, type Room } from '$entities/rooms';
+	import { fetchRooms, type Room } from '$entities/locations';
 	import DropdownSelect from '$shared/components/DropdownSelect.svelte';
 	import LabeledInput from '$shared/components/LabeledInput.svelte';
 	import type { ComponentType, SvelteComponent } from 'svelte';

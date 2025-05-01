@@ -1,4 +1,5 @@
-import type { FloorPlan, Room } from '../types/floorPlan';
+import type { Floor, Room } from '$features/floorViewer/model/floorModel';
+import { ErrorMessages } from './errorMessages';
 
 /**
  * SVGファイルを読み込む
@@ -12,9 +13,8 @@ export async function loadSvg(url: string): Promise<string> {
 			throw new Error(`Failed to load SVG: ${response.status} ${response.statusText}`);
 		}
 		return await response.text();
-	} catch (error) {
-		console.error('SVG読み込みエラー:', error);
-		return '';
+	} catch {
+		throw new Error(ErrorMessages.SVG_GENERATION_ERROR);
 	}
 }
 
@@ -23,13 +23,13 @@ export async function loadSvg(url: string): Promise<string> {
  * @param floorPlan 間取り図データ
  * @returns SVGコンテンツ（HTML文字列）
  */
-export function generateSvgFromJson(floorPlan: FloorPlan): string {
+export function generateSvgFromJson(floorPlan: Floor): string {
 	const { width, height, viewBox, rooms } = floorPlan;
 
 	let svgContent = `<svg width="${width}" height="${height}" viewBox="${viewBox}" fill="none" xmlns="http://www.w3.org/2000/svg">`;
 
 	// 各部屋の要素を生成
-	rooms.forEach((room) => {
+	rooms.forEach((room: Room) => {
 		svgContent += generateRoomElement(room);
 	});
 
@@ -92,19 +92,44 @@ export function addRoomClickEvents(callback: (roomName: string) => void): void {
 }
 
 /**
- * JSONファイルを読み込んでFloorPlanオブジェクトを返す
+ * JSONファイルを読み込んでFloorオブジェクトを返す
  * @param url JSONファイルのURL
- * @returns FloorPlanオブジェクト
+ * @returns Floorオブジェクト
  */
-export async function loadFloorPlanJson(url: string): Promise<FloorPlan> {
+export async function loadFloorJson(url: string): Promise<Floor> {
 	try {
 		const response = await fetch(url);
 		if (!response.ok) {
 			throw new Error(`Failed to load floor plan data: ${response.status} ${response.statusText}`);
 		}
 		return await response.json();
-	} catch (error) {
-		console.error('間取り図データの読み込みエラー:', error);
-		throw error;
+	} catch {
+		throw new Error(ErrorMessages.SVG_GENERATION_ERROR);
+	}
+}
+
+/**
+ * 間取り図の初期化処理を一括で行う
+ * @param url 間取り図JSONファイルのURL
+ * @param roomClickCallback 部屋クリック時のコールバック関数
+ * @returns {Promise<{svgContent: string}>} 生成されたSVG文字列
+ */
+export async function initializeFloor(
+	url: string,
+	roomClickCallback: (roomName: string) => void
+): Promise<{ svgContent: string, floorPlan: Floor | null }> {
+	try {
+		// JSONから間取り図データを読み込む
+		const floorPlan = await loadFloorJson(url);
+		
+		// JSONデータからSVGを生成
+		const svgContent = generateSvgFromJson(floorPlan);
+		
+		// SVG生成後、部屋要素にクリックイベントを追加
+		addRoomClickEvents(roomClickCallback);
+		
+		return { svgContent, floorPlan };
+	} catch {
+		throw new Error(ErrorMessages.SVG_GENERATION_ERROR);
 	}
 }

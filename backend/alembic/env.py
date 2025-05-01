@@ -10,9 +10,9 @@ from alembic import context
 
 # モデルのメタデータをインポート
 from app.db.base import Base
+
 # 全モデルをインポートして、SQLAlchemyがメタデータに登録できるようにする
-from app.models.item import Item
-from app.models.stock import Stock
+from app.models import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -86,6 +86,9 @@ async def run_migrations_online() -> None:
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
+
+        print("== DEBUG: Tables registered in metadata ==")
+        print(list(Base.metadata.tables.keys()))
 
     await connectable.dispose()
 
