@@ -11,6 +11,11 @@ export default defineConfig({
 		}
 	},
 	test: {
+		coverage: {
+			provider: 'v8',
+			reporter: ['text', 'json', 'html', 'json-summary'],
+			reportsDirectory: './coverage'
+		},
 		workspace: [
 			{
 				extends: './vite.config.ts',
