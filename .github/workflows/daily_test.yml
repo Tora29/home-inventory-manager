@@ -27,7 +27,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: 依存関係のインストール
-        run: npm ci
+        run: npm install
 
       - name: テスト実行後カバレッジを生成
         run: npm run test:unit -- --coverage
