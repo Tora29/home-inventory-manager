@@ -18,19 +18,26 @@ jobs:
         with:
           node-version: '20'
 
+      - name: フロントエンドディレクトリに移動
+        run: cd frontend
+
       - name: Node.jsモジュール のキャッシュ
         uses: actions/cache@v3
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
       - name: 依存関係のインストール
-        run: npm ci
+        run: |
+          cd frontend
+          npm install
 
       - name: テスト実行後カバレッジを生成
-        run: npm run test:unit -- --coverage
+        run: |
+          cd frontend
+          npm run test:unit -- --coverage
         continue-on-error: true
         id: test
 
@@ -39,15 +46,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: coverage/
-
-      # カバレッジ結果を抽出
-      - name: カバレッジパーセントの抽出
-        if: success()
-        id: coverage
-        run: |
-          coverage=$(jq '.total.lines.pct' coverage/coverage-summary.json)
-          echo "coverage=${coverage}" >> $GITHUB_OUTPUT
+          path: frontend/coverage/
 
       # テスト成功時のSlack 通知
       - name: テスト成功時のSlack 通知
