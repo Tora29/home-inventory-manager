@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-	plugins: [tailwindcss(),sveltekit()],
+	plugins: [tailwindcss(), sveltekit(), svelteTesting()],
 	server: {
 		watch: {
 			usePolling: true
@@ -16,28 +16,7 @@ export default defineConfig({
 			reporter: ['text', 'json', 'html', 'json-summary'],
 			reportsDirectory: './coverage'
 		},
-		workspace: [
-			{
-				extends: './vite.config.ts',
-				plugins: [svelteTesting()],
-				test: {
-					name: 'client',
-					environment: 'jsdom',
-					clearMocks: true,
-					include: ['__tests__/**/*.{test,spec}.{js,ts}', 'src/**/*.{test,spec}.{js,ts}'],
-					exclude: ['src/lib/server/**'],
-					setupFiles: ['./vitest-setup-client.ts']
-				}
-			},
-			{
-				extends: './vite.config.ts',
-				test: {
-					name: 'server',
-					environment: 'node',
-					include: ['__tests__/**/*.{test,spec}.{js,ts}', 'src/**/*.{test,spec}.{js,ts}'],
-					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
-				}
-			}
-		]
+		environment: 'jsdom',
+		include: ['__tests__/**/*.{test,spec}.{js,ts}', 'src/**/*.{test,spec}.{js,ts}']
 	}
 });
