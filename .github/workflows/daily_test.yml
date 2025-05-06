@@ -41,6 +41,14 @@ jobs:
         continue-on-error: true
         id: test
 
+      - name: カバレッジを抽出
+        if: always()
+        id: coverage
+        run: |
+          cd frontend
+          COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.statements.pct')
+          echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+
       - name: カバレッジレポートのアップロード
         if: always()
         uses: actions/upload-artifact@v4
