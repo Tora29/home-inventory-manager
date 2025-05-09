@@ -3,7 +3,7 @@
  * 汎用的なフィルタリング機能と、特定のドメイン向けの拡張機能を提供します
  */
 
-import type { Stock } from '$features/stockDataTable/model/stockModel';
+import type { Stock } from '$features/stockList/model/stockModel';
 
 // ベースとなるフィルタリング関数 -----------------------------------
 

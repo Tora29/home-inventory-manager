@@ -3,7 +3,7 @@ import {
   fetchLocations,
   fetchStocks, 
   fetchCategories 
-} from "$features/stockDataTable/api/stockDataTableApi";
+} from "$features/stockList/api/stockDataTableApi";
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async () => {

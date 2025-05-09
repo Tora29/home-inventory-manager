@@ -1,6 +1,6 @@
-import { API_BASE_URL } from '$shared/utils/apiConfig';
-import { handleApiError, safeApiCall } from '$shared/utils/apiErrorHandler';
-import type { Category } from '$features/stockDataTable/model/categoryModel';
+import { API_BASE_URL } from '$shared/utils/apiConfigUtils';
+import { handleApiError, safeApiCall } from '$shared/utils/apiErrorHandlerUtils';
+import type { Category } from '$features/stockList/model/categoryModel';
 
 /**
  * すべてのカテゴリデータを取得

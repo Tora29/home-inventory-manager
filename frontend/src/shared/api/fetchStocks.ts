@@ -1,6 +1,6 @@
-import { API_BASE_URL } from '$shared/utils/apiConfig';
-import { handleApiError, safeApiCall } from '$shared/utils/apiErrorHandler';
-import type { Stock } from '$features/stockDataTable/model/stockModel';
+import { API_BASE_URL } from '$shared/utils/apiConfigUtils';
+import { handleApiError, safeApiCall } from '$shared/utils/apiErrorHandlerUtils';
+import type { Stock } from '$features/stockList/model/stockModel';
 
 /**
  * すべての在庫データを取得

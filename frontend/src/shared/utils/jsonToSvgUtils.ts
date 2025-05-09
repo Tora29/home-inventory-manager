@@ -1,5 +1,5 @@
 import type { Floor, Room } from '$features/floorViewer/model/floorModel';
-import { ErrorMessages } from './errorMessages';
+import { ErrorMessages } from './errorMessageUtils';
 
 /**
  * SVGファイルを読み込む

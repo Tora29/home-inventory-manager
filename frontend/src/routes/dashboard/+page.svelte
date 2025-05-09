@@ -3,13 +3,13 @@
 	let { data }: PageProps = $props();
 
 	import { onMount } from 'svelte';
-	import type { Stock } from '$features/stockDataTable/model/stockModel';
-	import type { Category } from '$features/stockDataTable/model/categoryModel';
-	import type { Item } from '$features/stockDataTable/model/itemModel';
-	import type { Location } from '$features/stockDataTable/model/locationModel';
+	import type { Stock } from '$features/stockList/model/stockModel';
+	import type { Category } from '$features/stockList/model/categoryModel';
+	import type { Item } from '$features/stockList/model/itemModel';
+	import type { Location } from '$features/stockList/model/locationModel';
 
 	import FloorViewer from '$features/floorViewer/ui/FloorViewer.svelte';
-	import StockDataTable from '$features/stockDataTable/ui/StockDataTable.svelte';
+	import StockDataTable from '$features/stockList/ui/StockList.svelte';
 
 	let stocks = $state<Stock[]>([]);
 	let categories = $state<Category[]>([]);

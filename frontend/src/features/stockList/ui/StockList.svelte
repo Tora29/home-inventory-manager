@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { Stock } from '$features/stockDataTable/model/stockModel';
-	import type { Category } from '$features/stockDataTable/model/categoryModel';
-	import type { Item } from '$features/stockDataTable/model/itemModel';
-	import type { Location } from '$features/stockDataTable/model/locationModel';
+	import type { Stock } from '$features/stockList/model/stockModel';
+	import type { Category } from '$features/stockList/model/categoryModel';
+	import type { Item } from '$features/stockList/model/itemModel';
+	import type { Location } from '$features/stockList/model/locationModel';
 	
 	import DataTable, { type Column, type DataItem } from '$shared/components/DataTable.svelte';
 	import SearchInput from '$shared/components/SearchInput.svelte';
@@ -10,7 +10,7 @@
 	import Button from '$shared/components/Button.svelte';
 	import AlertWithText from '$shared/components/AlertWithText.svelte';
 	
-	import { applyStockFilters } from '$shared/utils/utilFilters';
+	import { applyStockFilters } from '$shared/utils/utilFiltersUtils';
 
 	const props = $props<{
 		stocks: Stock[];

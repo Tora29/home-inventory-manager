@@ -1,7 +1,7 @@
-import { API_BASE_URL } from '$shared/utils/apiConfig';
+import { API_BASE_URL } from '$shared/utils/apiConfigUtils';
 import type { Location } from '$features/floorViewer/model/types';
-import { handleApiError, safeApiCall } from '$shared/utils/apiErrorHandler';
-import { ErrorMessages } from '$shared/utils/errorMessages';
+import { handleApiError, safeApiCall } from '$shared/utils/apiErrorHandlerUtils';
+import { ErrorMessages } from '$shared/utils/errorMessageUtils';
 
 /**
  * すべての部屋を取得

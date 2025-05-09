@@ -1,6 +1,6 @@
-import { API_BASE_URL } from '$shared/utils/apiConfig';
-import { handleApiError, safeApiCall } from '$shared/utils/apiErrorHandler';
-import type { Location } from '$features/stockDataTable/model/locationModel';
+import { API_BASE_URL } from '$shared/utils/apiConfigUtils';
+import { handleApiError, safeApiCall } from '$shared/utils/apiErrorHandlerUtils';
+import type { Location } from '$features/stockList/model/locationModel';
 
 /**
  * すべての保管場所データを取得

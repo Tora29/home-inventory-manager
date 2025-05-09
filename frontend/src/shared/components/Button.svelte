@@ -38,7 +38,7 @@
 		className?: string;
 		iconOnly?: boolean;
 		ariaLabel?: string;
-		onclick?: (event: MouseEvent) => void;
+		onclick?: ((event: MouseEvent) => void);
 		children?: string;
 	}>();
 
