@@ -20,8 +20,13 @@ jobs:
           ls -la backend/.env.prod
           ls -la frontend/.env.prod
 
+      - name: Clean Docker cache
+        run: |
+          docker builder prune -af
+          docker system prune -af --volumes
+
       - name: Build and deploy
         run: |
           cd infra
           docker compose down
-          docker compose -f docker-compose.yml up -d --build
+          docker compose -f docker-compose.yml up -d --build --no-cache
