@@ -9,11 +9,14 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# ビルド成果物を指定のディレクトリに出力
-# 注: ビルド成果物は docker-compose.yml のボリュームで共有される
+# 単一ステージに変更
 FROM alpine:latest
 
-COPY --from=build /app/build /dist
+WORKDIR /dist
+# ボリュームが既存の場合、まず中身を空にする
+RUN rm -rf /dist/* || true
+# ビルド成果物をコピー
+COPY --from=build /app/build/* /dist/
 
-# このコンテナはビルドのみを行い、サービスとしては起動しない
+# このコンテナはビルドのみを行うので終了
 CMD ["true"]
