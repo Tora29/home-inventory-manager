@@ -20,10 +20,12 @@ jobs:
           ls -la backend/.env.prod
           ls -la frontend/.env.prod
 
-      - name: Clean Docker cache
+      - name: Clean Docker resources
         run: |
           docker builder prune -af
           docker system prune -af --volumes
+          docker volume rm frontend-build-prod || true
+          docker volume rm backend-build-prod || true
 
       - name: Build and deploy
         run: |
