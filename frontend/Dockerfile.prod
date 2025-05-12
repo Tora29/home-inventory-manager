@@ -9,14 +9,10 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# 単一ステージに変更
+# ビルド成果物を指定のディレクトリに出力
 FROM alpine:latest
 
-WORKDIR /dist
-# ボリュームが既存の場合、まず中身を空にする
-RUN rm -rf /dist/* || true
-# ビルド成果物をコピー
-COPY --from=build /app/build/* /dist/
+COPY --from=build /app/build /dist
 
-# このコンテナはビルドのみを行うので終了
+# このコンテナはビルドのみを行い、サービスとしては起動しない
 CMD ["true"]
